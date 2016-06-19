@@ -2,6 +2,8 @@ var mongoose = require( 'mongoose' );
 var UserModel = mongoose.model( 'UserModel' );
 var TechModel = mongoose.model( 'TechModel' );
 var chalk = require('chalk');
+var app = require('../app');//expressJS allows circular dependencies
+
 var gLoggedIN = 0;
 
 exports.loginPageHandler = function (req, res){
@@ -29,9 +31,13 @@ exports.authHandler = function (req, res){
     } else if (pwdReq === userObj.password){
 				authResult =   '<span class="label label-success">Login successful</span>' ;   
         gLoggedIN = 1;
-        res.render('message.handlebars', {message:authResult,
-                                          LoggedIN: gLoggedIN
-                                         });
+        
+        req.url = '/console';
+        req.method = 'get';
+        app._router.handle(req, res);
+        // res.render('message.handlebars', {message:authResult,
+        //                                  LoggedIN: gLoggedIN
+        //                                 });
 	  } else{
 				authResult = '<span class="label label-danger">Login Failed: Password did not match</span>' ; 
         res.render('message.handlebars', {message:authResult, 
@@ -43,6 +49,12 @@ exports.authHandler = function (req, res){
 
 
 exports.consoleHandler = function (req, res){
+  if (gLoggedIN){}else{
+    res.status(500);
+    res.send("Incorrect request");
+    return;
+  }
+  
   var recordsArray; //to keep all tech records
   TechModel.find({}, function(err, techArray){
     if (!err){

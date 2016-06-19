@@ -1,5 +1,5 @@
 {
-  "name": "mybcrypt",
+  "name": "crud",
   "version": "1.0.0",
   "description": "node mongolab handlebars",
   "main": "app.js",
